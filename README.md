@@ -171,8 +171,82 @@ We identified three common symptoms of numerical bugs: wrong values, crashes, an
 ## CONCLUSION 
 
 This paper presented the comprehensive study of real world numerical bugs in GPU programming. We examined 645 issues from a open-source GPU programs and the CuPy library. We identified and carefully examined 202 numerical bugs. We found that numerical bugs can be largely categorized into four groups: accuracy bugs, special-value bugs, environmental issues, and correctness bugs. We discussed the characteristics of numerical bugs. We found that the most common symptom for numerical bugs are wrong results, followed by crashes and bad performance.
+
 Future work includes examining more numerical bugs in CuPy library because our dataset consist of more
 unexplored CuPy related issues.
+
+Dataset: https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Data/MergedFinalListFP.xlsx
+
+
+## References
+[1] curand. https://developer.nvidia.com/curand.
+[2] Deep Learning Performance Documentation. https://docs.nvidia.com/deeplearning/performance/
+mixed-precision-training/index.html.
+[3] Floating Point and IEEE-754 Compliance for NVIDIA GPUs. https://on-demand.gputechconf.com/
+gtc-express/2011/presentations/floatingpointwebinarjune2011.pdf.
+[4] Mixed precision nbsp;: nbsp; tensorflow core.
+[5] NVIDIA cuDNN. https://developer.nvidia.com/cudnn.
+[6] Floating point operations difference between CPU and GPU, Nov 2012. https://forums.developer.
+nvidia.com/t/floating-point-operations-difference-between-cpu-and-gpu/27334.
+[7] Floating point: CPU and GPU Differences, Aug 2013. http://www.cudahandbook.com/2013/08/
+floating-point-cpu-and-gpu-differences/.
+[8] Cuda math library, Mar 2019. https://developer.nvidia.com/cuda-math-library.
+[9] cublas, Apr 2021. https://developer.nvidia.com/cublas.
+[10] cufft, Apr 2021. {https://developer.nvidia.com/cufft},journalNVIDIA Developer.
+[11] cusolver, Apr 2021. https://developer.nvidia.com/cusolver.
+[12] Fermi (microarchitecture), Sep 2021. https://en.wikipedia.org/wiki/Fermi_(microarchitecture).
+[13] Fma instruction set, Sep 2021. https://en.wikipedia.org/wiki/FMA_instruction_set.
+[14] Kepler (microarchitecture), Aug 2021. https://en.wikipedia.org/wiki/Kepler_(microarchitecture).
+[15] List of Nvidia graphics processing units, Sep 2021. https://en.wikipedia.org/wiki/List_of_Nvidia_
+graphics_processing_units.
+[16] Earl T Barr, Thanh Vo, Vu Le, and Zhendong Su. Automatic detection of floating-point exceptions. ACM
+Sigplan Notices, 48(1):549–560, 2013.
+[17] Cupy. Cupy/cupy: Numpy amp; scipy for gpu.
+[18] Cupy. Cupyx.scipy.signal.convolve2d: Integer overflow when using mixed dtypes · issue 6047 · cupy/cupy.
+[19] Cupy. [issue] cp.matmul slower than np.matmul ?? · issue 4891 · cupy/cupy.
+[20] Cupy. Ndimage.map coordinates performs incorrectly with several order values · issue 4550 · cupy/cupy.
+[21] Cupy. Passing cupy functions into cupyx.scipy.ndimage.filters.generic filter causes a typeerror · issue 3909
+· cupy/cupy.
+[22] Cupy. Valueerror when loading .npy using np.load() · issue 3701 · cupy/cupy.
+[23] Anthony Di Franco, Hui Guo, and Cindy Rubio-Gonz´alez. A comprehensive study of real-world numerical
+bug characteristics. In 2017 32nd IEEE/ACM International Conference on Automated Software Engineering (ASE), pages 509–519. IEEE, 2017.
+[24] Zhoulai Fu and Zhendong Su. Effective floating-point analysis via weak-distance minimization. In Proceedings of the 40th ACM SIGPLAN Conference on Programming Language Design and Implementation,
+pages 439–452, 2019.
+[25] Geetika Gupta. Difference between single-, double-, multi-, mixed-precision: Nvidia blog, November 2019. https://blogs.nvidia.com/blog/2019/11/15/whats-the-difference-between-single-double-multiand-mixed-precision-computing/.
+[26] Nhut-Minh Ho, Himeshi De silva, and Weng-Fai Wong. GRAM: A Framework for Dynamically Mixing
+Precisions in GPU Applications. ACM Transactions on Architecture and Code Optimization (TACO),
+18(2):1–24, 2021.
+[27] Nhut-Minh Ho and Weng-Fai Wong. Exploiting half precision arithmetic in Nvidia GPUs. In 2017 IEEE
+High Performance Extreme Computing Conference (HPEC), pages 1–7. IEEE, 2017.
+10
+[28] Huggingface. T5model in fp16 still yield nan with more complex examples · issue 4586 · huggingface/transformers.
+[29] Ignacio Laguna. Fpchecker: Detecting floating-point exceptions in gpu applications. In 2019 34th
+IEEE/ACM International Conference on Automated Software Engineering (ASE), pages 1126–1129. IEEE,
+2019.
+[30] Lukas Polok and Pavel Smrz. Increasing double precision throughput on NVIDIA Maxwell GPUs. In
+Proceedings of the 24th High Performance Computing Symposium, pages 1–8, 2016.
+[31] Pytorch. Torch.norm gives nan gradient when i input small-value float16 tensor · issue 43211 · pytorch/pytorch.
+[32] Royi, Shehzan Mohammed, Pavan Yalamanchili, Micha l Janiszewski, Gurga, Dan, XXXeeqXXX,
+and Don Karam. Explaining fp64 performance on gpus, Jun 2015. https://arrayfire.com/
+explaining-fp64-performance-on-gpus/.
+[33] Grigory Sapunov. Fp64, fp32, fp16, bfloat16, tf32, and other members of the zoo, May 2020.
+[34] Sruthikesh Surineni, Ruidong Gu, Huyen Nguyen, and Michela Becchi. Understanding the performanceaccuracy tradeoffs of floating-point arithmetic on gpus. In 2017 IEEE International Symposium on Workload Characterization (IISWC), pages 207–218. IEEE, 2017.
+[35] Enyi Tang, Earl Barr, Xuandong Li, and Zhendong Su. Perturbing numerical calculations for statistical
+analysis of floating-point program (in) stability. In Proceedings of the 19th international symposium on
+Software testing and analysis, pages 131–142, 2010.
+[36] Tensorflow. Tensorflow 2.2 using tf.float16 executes only on cpu · issue 41783 · tensorflow/tensorflow.
+[37] Tensorflow. [tf lite] tflitegpudelegate init: Conv 2d: Unsupported data type for float32 tensor · issue 40357
+· tensorflow/tensorflow.
+[38] Ran Wang, Daming Zou, Xinrui He, Yingfei Xiong, Lu Zhang, and Gang Huang. Detecting and Fixing
+Precision-Specific Operations for Measuring Floating-Point Errors. In Proceedings of the 2016 24th ACM
+SIGSOFT International Symposium on Foundations of Software Engineering, pages 619–630, 2016.
+[39] Nathan Whitehead and Alex Fit-Florea. Precision & performance: Floating point and IEEE 754 compliance
+for NVIDIA GPUs. rn (A+ B), 21(1):18749–19424, 2011.
+[40] Daming Zou, Ran Wang, Yingfei Xiong, Lu Zhang, Zhendong Su, and Hong Mei. A genetic algorithm for
+detecting significant floating-point inaccuracies. In 2015 IEEE/ACM 37th IEEE International Conference
+on Software Engineering, volume 1, pages 529–539. IEEE, 2015.
+[41] Daming Zou, Muhan Zeng, Yingfei Xiong, Zhoulai Fu, Lu Zhang, and Zhendong Su. Detecting floatingpoint errors via atomic conditions. Proceedings of the ACM on Programming Languages, 4(POPL):1–27,
+2019.
 
 
 
