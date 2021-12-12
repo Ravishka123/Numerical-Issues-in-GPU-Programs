@@ -56,21 +56,21 @@ point operations.
 GPU programs encounter several numerical issues. The following are the summary of the GPU specific numerical
 issues we found through our study.
 
--NVIDIA GPUs can run operations in float16 faster than in float32.Variables and a few computations
+- NVIDIA GPUs can run operations in float16 faster than in float32.Variables and a few computations
 should still be in float32 for numeric reasons so that the model trains to the same quality. Float16 for
 matrix multiplications, convolutions etc. [36]
--Mixed precision policy applies that float16 is used for computations and keep variables in float32. The
+- Mixed precision policy applies that float16 is used for computations and keep variables in float32. The
 issues such as underflow, overflow, and datatype casting issues can occur. [4]
--Older GPUs offer no math performance benefit for using mixed precision. Examples of GPUs that will
+- Older GPUs offer no math performance benefit for using mixed precision. Examples of GPUs that will
 benefit most from mixed precision include RTX GPUs, the V100, and the A100. FP32 always uses CUDA
 cores. FP16 may or may not use tensor cores. [4]
--Integer quantization is mainly for CPU since CPU calculates integer better than float number. When
+- Integer quantization is mainly for CPU since CPU calculates integer better than float number. When
 you run it on GPU, it converts integer to float internally. [37] Issues such as high memory use due to the
 allocation of large memory, and precision loss can occur due to integer behavior in the GPUs.
--Inconsistent handling of NaNs on Cuda compared to CPU tensors.
--IEEE half-precision 16-bit float uses 5 bits exponent, and 10 bits fraction, however, bfloat16 uses 8 bits
+- Inconsistent handling of NaNs on Cuda compared to CPU tensors.
+- IEEE half-precision 16-bit float uses 5 bits exponent, and 10 bits fraction, however, bfloat16 uses 8 bits
 exponent,and 7 bits fraction. Precision loss can occur when casting float16 to bfloat16 in mixed precision
 computations.
--The NVIDIA GPU architecture uses a little-endian representation. NumPy supports little- and bigendianness. CuPy arrays only use little-endian arrays. Big-endian arrays lead to wrong results.
--Low double precision performance of the GPUs.
--CuPy does not support dtype=object arrays which is supported by NumPy. [22
+- The NVIDIA GPU architecture uses a little-endian representation. NumPy supports little- and bigendianness. CuPy arrays only use little-endian arrays. Big-endian arrays lead to wrong results.
+- Low double precision performance of the GPUs.
+- CuPy does not support dtype=object arrays which is supported by NumPy. [22
