@@ -73,4 +73,110 @@ exponent,and 7 bits fraction. Precision loss can occur when casting float16 to b
 computations.
 - The NVIDIA GPU architecture uses a little-endian representation. NumPy supports little- and bigendianness. CuPy arrays only use little-endian arrays. Big-endian arrays lead to wrong results.
 - Low double precision performance of the GPUs.
-- CuPy does not support dtype=object arrays which is supported by NumPy. [22
+- CuPy does not support dtype=object arrays which is supported by NumPy. [22]
+
+## METHODOLOGY
+
+In order to collect samples of GPU programming related numerical issues, we retrieve commit samples from GitHub repositories. First, we obtain a list of GitHub issues mentioning keywords associated with numerical computation using the GitHub search API. Next, we searched issue titles and descriptions for the following keywords *’nan’, ’overflow’, ’underflow’, ’infinity’, ’infinite’, ’precision’, ’unstable’, ’instability’, ’ringing’, ’unbounded’, ’roundoff ’, ’truncation’, ’rounding’, ’diverge’, ’cancellation’, ’cancel’, ’accuracy’, ’accurate’* to find numerical issues related to GPU programming. This is a similar approach followed by Franco et al. [23] who conducted a study on numerical bugs in numerical libraries in CPU computing. We also added extra keywords such as *’numeric’, ’floating’, ’floats’, ’fp’, ’cufft’, ’cublas’, ’curand’, ’cuda math library’, ’cusolver’, ’cusparse’, ’cutensor’, ’GPU’, and, ’GPU Programming’* to verify numerical issu es related to GPU programs. The libraries such as CuFFT [10], Cublas [9], CuDNN [5], Math library [8], cuRand [1], and cuSolver [11] are GPU specific math libraries. Therefore, using a keyword search for these libraries help us to extract numerical issues associated with GPU programs. Our study includes issues related to a library called CuPy [17]. CuPy is a NumPy/SciPy-compatible array library for GPU-accelerated computing with Python [17]. CuPy also provides access to low-level CUDA features. Developer can pass ndarray to existing CUDA C/C++ programs via RawKernels, use Streams for performance, or even call CUDA Runtime APIs directly. [17]. CuPy library supports all the CUDA math libraries which improves the speedup of numerical computations in the GPU.
+
+We chose to examine bug reports to have access to more bug information that includes original reports from users and developer discussions. We included bug reports that are (1) confirmed by developers (e.g., status is closed), (2) a bug fix is available (3) more likely to be numerical bugs. We manually examined the selected bugs by reading their descriptions, comments, and any associated commits or pull requests to verify that they were numerical bugs of interest to our study. Then, we made a second pass through all bugs that passed this final selection criterion, and classified them according to the symptoms they displayed and the strategies used to implement their fixes. Table 1 provides the summary of our dataset.
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Table1.JPG)
+
+## Numerical Bug Study 
+
+We found 202 numerical issues in 645 issues inspected and developed a categorization of numerical bugs that
+consist of four groups: a*ccuracy, special value, correctness, and environmental*.Table 2 shows the distribution
+of each kind of bug. Next we describe the characteristics of each bug category.
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Table2.JPG)
+
+### Accuracy Bugs
+
+We classified bugs as accuracy bugs when precision loss due to rounding or truncation errors led to an incorrect
+result. We found 50 accuracy bugs out of 202 issues. We found that accuracy bugs occur due to several reasons:
+- Precision issues can cause accuracy bugs when using too much precision, the performance degrade. Also,
+using less precision can cause precision loss yielding to incorrect results.
+- Roundoff errors or truncation errors can lead to precision loss.
+- Floating-point arithmetic can cause underflow and overflows can lead to accuracy bugs.
+- Datatype casting can also change the numerical precision of the variable causing accuracy bugs. Casting
+issues are mostly seen in mixed precision computations.
+
+An example of accuracy bug due to roundoff issue is seen in the project CuPy [20]. When computing the
+results for order=none and 1, the program produces incorrect results. The results are validated by testing with
+the SciPy library. The figure 3 shows the code snippet of the issue. The issue occurs because of an rounding
+off error of the value in the variable point. The fix for this issue is to change the values of the variable point
+as shown in the figure 4.
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure3.JPG)
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure4.JPG)
+
+Another example of the accuracy bug is seen the project CuPy [18]. The code snippet of the issue is shown in the figure 5. CuPy’s convolve2d behaves differently from SciPy’s convolve2d when using two arrays with different dtypes. The user wanted to test how arrays of different datatypes behave with the convolve2d. When using integers with different precision, CuPy’s convolve2d leads to integer overflow. If the precisions of the convolved integer arrays are different, the calculation is limited by the lowest precision and integer overflow occurs. However, the SciPy library behaves correctly When convolving arrays of mixed dtypes, the calculations should be performed on the highest-precision dtype. The developers has suggested a temporary fix for this issue in the figure 6 by upcasting the array with the lower precision.
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure5.JPG)
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure6.JPG)
+
+Accuracy bugs produce various symptoms. Most of the accuracy bugs produces wrong results. These results are often tested with the CPU results. Results of CuPy library’s accuracy issues are tested with NumPy or SciPy versions. Some programs produce error messages relavant to the overflow, underflow, or casting issues. Performance of the computations or high amount of memory are other symptoms that the accuracy bugs produce.
+
+**Fixing Accuracy Bugs:** Most common fixing strategy for accuracy bugs is to change the numerical
+precision depending on the situation. If the arithmetic uses few precision, the user can switch to high precision.
+Another common fixing strategy is to transform the arithmetic expressions to improve their precision. Also,
+strategies like up-casting or down-casting can be helpful to fix underflow and overflow issues. Unit testing tools
+can be developed to test the input cases for different arithmetic expressions to understand the cases when the
+accuracy bugs occur in a program.
+
+### Correctness Bugs
+A correctness bugs is caused by any error in the implementation of an algorithm that have to do primarily with its mathematical or algorithmic structure. Correctness bugs are the most type of numerical bugs; 110 out of 202 numerical bugs are correctness bugs. We found that correctness bugs occur because of several reasons:
+- Errors in using incorrect datatypes in expressions
+- Errors in unsupported datatypes in compiler optimizations
+- Divide by zero issue
+
+An example of a correctness bug is seen in the project CuPy [21] shown by the code snippet in the figure 7.The issue with the code snippet is that the user cannot pass the function cupy.mean which leads to a bad type error during the compilation. The fix for this problem is by creating a ReductionKernel by the user to support the cupy.mean that is shown in the figure 8.
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure7.JPG)
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure8.JPG)
+
+Correctness bugs produce errors such as compile errors, and type errors. The program may crash with an infinite loop. Also, using incorrect expressions and datatype can cause performance issues. Another symptom that a correctness bug can produce is floating point exceptions because of divide by zero issues.
+
+**Fixing Correctness Bugs:** User needs to have a domain specific knowledge to understand the data types
+that certain numerical expressions support. Also, updating the library versions can help to fix correctness bugs
+because a new version can add the support for new datatypes. Another common strategy is fixing expressions/using correct expressions and avoiding the use of type conversions in certain optimization levels.
+Also, CuPy library uses RawKernel, ReductionKernel, and Element-wise Kernel to improve the quality of numerical computations and these stragegies are not supported by the NumPy or SciPy libraries. cupy.RawKernel Easily uses raw CUDA C kernel functions from python.cupy.ReductionKernel defines the own custom reduction kernel operation cupy.ElementwiseKernel defines custom element wise operation kernel. These techniques improve the performance as well as the numerical stability of the CuPy library.
+
+### Special-value bugs
+We refer to signed zero (-0/+0), infinities, and NaN (Not a Number) as special values. We categorized an issue in to this category when the program produces any special value outputs, program fails with NaN inputs, or producing NaN during the computation because of the precision loss leading to infinite values. A special-value bug produces wrong results that consist of special values in the output as symptoms. An example of a Special Value bug is seen in the project transformers [28]. The code snippet in the figure 9 shows the part of the code when the developer identifies that the output of the program produces NaNs with fp16 datatype. The reason for the issue is that the tensor layer output contains inf values that leads to produce NaN values in the output.
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure9.JPG)
+
+Another example is seen in the project pytorch [31]. The code snippet shown in the figure 10 when a.grad produces NaN output with FP16. However, the program works correctly with FP32. The reason for this issue is when the number is small enough to generate infinite values. The fix for this issue is shown in the figure 11 by avoiding values that are too low.
+
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure10.JPG)
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure11.JPG)
+
+**Fixing Special Value Bugs:** The common fixing strategy is to add NaN checks which require the knowledge on when to perform a NaN check in the program. Also checking for signed zero values can help to solve the bugs. Another common fixing strategy is to avoid using numbers that are lesser the lowest number for a certain datatype. This prevents from producing infinite values in the program.
+
+###  Environmental issues
+An environmental issue can cause a program to fail because of the use of unsupported GPUs for specific computations. Also, double precision computations are extremely slow in GPUs. Therefore, we added this type of bugs that cause because of the GPUs. Bugs in this category produces symptoms related to bad performance. An example is seen in the project CuPy [19]. The code snippet in the figure 12 when the matrix multiplication using NumPy is faster than the CuPy with double precision numbers. The issue cannot be fixed and developers concerened of changing the datatype to FP32 as a temporary fix.
+
+The fixing strategies for environmental issues are either changing the device that can be costly or changing the datatype by checking whether the GPU supports mixed precision computations.
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Figure12.JPG)
+
+## General Symptoms
+We identified three common symptoms of numerical bugs: wrong values, crashes, and bad performance. Table 3 shows the categorization of the symptoms. We found that the majority of numerical bugs (102 out of 202) are revealed by program crashes resulting error messages, and infinite loop. This is followed by producing wrong values (72 out of 202), and causing bad performance (28 out of 202).
+
+![This is an image](https://github.com/Ravishka123/Numerical-Issues-in-GPU-programs/blob/main/Resources/Table3.JPG)
+
+## CONCLUSION 
+
+This paper presented the comprehensive study of real world numerical bugs in GPU programming. We examined 645 issues from a open-source GPU programs and the CuPy library. We identified and carefully examined 202 numerical bugs. We found that numerical bugs can be largely categorized into four groups: accuracy bugs, special-value bugs, environmental issues, and correctness bugs. We discussed the characteristics of numerical bugs. We found that the most common symptom for numerical bugs are wrong results, followed by crashes and bad performance.
+Future work includes examining more numerical bugs in CuPy library because our dataset consist of more
+unexplored CuPy related issues.
+
+
+
+
+
+
+
